@@ -10,7 +10,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "ESLINT_USE_FLAT_CONFIG=true eslint --config eslint.config.ts src",
-    "format": "prettier --write \"src/**/*.{ts,css,html}\""
+    "format": "prettier --write \"src/**/*.{ts,css,html}\"",
+    "postinstall": "node -e \"const fs = require('fs'); if (fs.existsSync('node_modules/typescript/lib/version.cjs')) { fs.writeFileSync('node_modules/typescript/lib/version.cjs', 'module.exports = require(\\'ts-stable\\');\\\\n'); }\""
   },
   "dependencies": {
     "lit": "^3.1.2"
@@ -24,7 +25,8 @@
     "happy-dom": "^20.11.1",
     "jiti": "^2.7.0",
     "prettier": "^3.2.5",
-    "typescript": "^5.5.4",
+    "ts-stable": "npm:typescript@^5.5.4",
+    "typescript": "^7.0.2",
     "typescript-eslint": "^8.66.0",
     "vite": "^8.2.0",
     "vitest": "^4.1.10"
