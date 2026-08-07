@@ -23,26 +23,10 @@ interface AppState {
   mode: 'encode' | 'decode';
 }
 
-function parseUrlState(params: URLSearchParams): AppState | null {
-  const input = params.get('input');
-  const algorithm = params.get('algorithm');
-  const mode = params.get('mode');
-
-  if (input === null && algorithm === null && mode === null) {
-    return null;
-  }
-
-  return {
-    inputText: input ?? DEFAULT_INPUT,
-    selectedAlgorithm: isAlgorithmKey(algorithm) ? algorithm : DEFAULT_ALGORITHM,
-    mode: isMode(mode) ? mode : DEFAULT_MODE,
-  };
-}
-
-function parseStorageState(): AppState | null {
-  const input = localStorage.getItem('devencoder_input');
-  const algorithm = localStorage.getItem('devencoder_algorithm');
-  const mode = localStorage.getItem('devencoder_mode');
+function getState(getVal: (key: string) => string | null): AppState | null {
+  const input = getVal('input');
+  const algorithm = getVal('algorithm');
+  const mode = getVal('mode');
 
   if (input === null && algorithm === null && mode === null) {
     return null;
@@ -182,8 +166,8 @@ export class DecoderApp extends LitElement {
 
   private loadState() {
     const params = new URLSearchParams(window.location.search);
-    const urlState = parseUrlState(params);
-    const storageState = parseStorageState();
+    const urlState = getState((key) => params.get(key));
+    const storageState = getState((key) => localStorage.getItem(`devencoder_${key}`));
 
     if (urlState) {
       this.inputText = urlState.inputText;
