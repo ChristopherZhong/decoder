@@ -17,13 +17,13 @@ const DEFAULT_INPUT = '';
 const DEFAULT_ALGORITHM = 'base64';
 const DEFAULT_MODE = 'encode';
 
-interface ParsedState {
-  inputText?: string;
-  selectedAlgorithm?: string;
-  mode?: 'encode' | 'decode';
+interface AppState {
+  inputText: string;
+  selectedAlgorithm: string;
+  mode: 'encode' | 'decode';
 }
 
-function parseState(getVal: (key: string) => string | null): ParsedState | null {
+function getState(getVal: (key: string) => string | null): AppState | null {
   const input = getVal('input');
   const algorithm = getVal('algorithm');
   const mode = getVal('mode');
@@ -36,12 +36,11 @@ function parseState(getVal: (key: string) => string | null): ParsedState | null 
     return null;
   }
 
-  const state: ParsedState = {};
-  if (hasInput) state.inputText = input;
-  if (hasAlgorithm) state.selectedAlgorithm = algorithm;
-  if (hasMode) state.mode = mode;
-
-  return state;
+  return {
+    inputText: input ?? DEFAULT_INPUT,
+    selectedAlgorithm: isAlgorithmKey(algorithm) ? algorithm : DEFAULT_ALGORITHM,
+    mode: isMode(mode) ? mode : DEFAULT_MODE,
+  };
 }
 
 @customElement('decoder-app')
@@ -171,17 +170,17 @@ export class DecoderApp extends LitElement {
 
   private loadState() {
     const params = new URLSearchParams(window.location.search);
-    const urlState = parseState((key) => params.get(key));
-    const storageState = parseState((key) => localStorage.getItem(`devencoder_${key}`));
+    const urlState = getState((key) => params.get(key));
+    const storageState = getState((key) => localStorage.getItem(`devencoder_${key}`));
 
     if (urlState) {
-      this.inputText = urlState.inputText ?? DEFAULT_INPUT;
-      this.selectedAlgorithm = urlState.selectedAlgorithm ?? DEFAULT_ALGORITHM;
-      this.mode = urlState.mode ?? DEFAULT_MODE;
+      this.inputText = urlState.inputText;
+      this.selectedAlgorithm = urlState.selectedAlgorithm;
+      this.mode = urlState.mode;
     } else if (storageState) {
-      this.inputText = storageState.inputText ?? DEFAULT_INPUT;
-      this.selectedAlgorithm = storageState.selectedAlgorithm ?? DEFAULT_ALGORITHM;
-      this.mode = storageState.mode ?? DEFAULT_MODE;
+      this.inputText = storageState.inputText;
+      this.selectedAlgorithm = storageState.selectedAlgorithm;
+      this.mode = storageState.mode;
     } else {
       this.inputText = DEFAULT_INPUT;
       this.selectedAlgorithm = DEFAULT_ALGORITHM;
