@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { algorithms } from '../utils/algorithms';
+import { algorithms } from '../algorithms/registry';
 import './theme-toggle';
 import './algorithm-selector';
 import './text-panel';
