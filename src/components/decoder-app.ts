@@ -13,12 +13,16 @@ function isAlgorithmKey(value: unknown): value is keyof typeof algorithms {
   return typeof value === 'string' && value in algorithms;
 }
 
+const DEFAULT_INPUT = '';
+const DEFAULT_ALGORITHM = 'base64';
+const DEFAULT_MODE = 'encode';
+
 @customElement('decoder-app')
 export class DecoderApp extends LitElement {
-  @state() private inputText = '';
+  @state() private inputText = DEFAULT_INPUT;
   @state() private outputText = '';
-  @state() private selectedAlgorithm = 'base64';
-  @state() private mode: 'encode' | 'decode' = 'encode';
+  @state() private selectedAlgorithm = DEFAULT_ALGORITHM;
+  @state() private mode: 'encode' | 'decode' = DEFAULT_MODE;
   @state() private error = '';
 
   static styles = css`
@@ -153,17 +157,19 @@ export class DecoderApp extends LitElement {
       storageInput !== null || storageAlgorithm !== null || storageMode !== null;
 
     if (hasUrlParams) {
-      this.inputText = urlInput !== null ? urlInput : '';
-      this.selectedAlgorithm = isAlgorithmKey(urlAlgorithm) ? urlAlgorithm : 'base64';
-      this.mode = isMode(urlMode) ? urlMode : 'encode';
+      this.inputText = urlInput ?? DEFAULT_INPUT;
+      this.selectedAlgorithm = isAlgorithmKey(urlAlgorithm) ? urlAlgorithm : DEFAULT_ALGORITHM;
+      this.mode = isMode(urlMode) ? urlMode : DEFAULT_MODE;
     } else if (hasStorageParams) {
-      this.inputText = storageInput !== null ? storageInput : '';
-      this.selectedAlgorithm = isAlgorithmKey(storageAlgorithm) ? storageAlgorithm : 'base64';
-      this.mode = isMode(storageMode) ? storageMode : 'encode';
+      this.inputText = storageInput ?? DEFAULT_INPUT;
+      this.selectedAlgorithm = isAlgorithmKey(storageAlgorithm)
+        ? storageAlgorithm
+        : DEFAULT_ALGORITHM;
+      this.mode = isMode(storageMode) ? storageMode : DEFAULT_MODE;
     } else {
-      this.inputText = '';
-      this.selectedAlgorithm = 'base64';
-      this.mode = 'encode';
+      this.inputText = DEFAULT_INPUT;
+      this.selectedAlgorithm = DEFAULT_ALGORITHM;
+      this.mode = DEFAULT_MODE;
     }
 
     this.performConversion();
