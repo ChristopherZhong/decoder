@@ -17,26 +17,31 @@ const DEFAULT_INPUT = '';
 const DEFAULT_ALGORITHM = 'base64';
 const DEFAULT_MODE = 'encode';
 
-interface AppState {
-  inputText: string;
-  selectedAlgorithm: string;
-  mode: 'encode' | 'decode';
+interface ParsedState {
+  inputText?: string;
+  selectedAlgorithm?: string;
+  mode?: 'encode' | 'decode';
 }
 
-function getState(getVal: (key: string) => string | null): AppState | null {
+function parseState(getVal: (key: string) => string | null): ParsedState | null {
   const input = getVal('input');
   const algorithm = getVal('algorithm');
   const mode = getVal('mode');
 
-  if (input === null && algorithm === null && mode === null) {
+  const hasInput = input !== null;
+  const hasAlgorithm = isAlgorithmKey(algorithm);
+  const hasMode = isMode(mode);
+
+  if (!hasInput && !hasAlgorithm && !hasMode) {
     return null;
   }
 
-  return {
-    inputText: input ?? DEFAULT_INPUT,
-    selectedAlgorithm: isAlgorithmKey(algorithm) ? algorithm : DEFAULT_ALGORITHM,
-    mode: isMode(mode) ? mode : DEFAULT_MODE,
-  };
+  const state: ParsedState = {};
+  if (hasInput) state.inputText = input;
+  if (hasAlgorithm) state.selectedAlgorithm = algorithm;
+  if (hasMode) state.mode = mode;
+
+  return state;
 }
 
 @customElement('decoder-app')
@@ -166,17 +171,17 @@ export class DecoderApp extends LitElement {
 
   private loadState() {
     const params = new URLSearchParams(window.location.search);
-    const urlState = getState((key) => params.get(key));
-    const storageState = getState((key) => localStorage.getItem(`devencoder_${key}`));
+    const urlState = parseState((key) => params.get(key));
+    const storageState = parseState((key) => localStorage.getItem(`devencoder_${key}`));
 
     if (urlState) {
-      this.inputText = urlState.inputText;
-      this.selectedAlgorithm = urlState.selectedAlgorithm;
-      this.mode = urlState.mode;
+      this.inputText = urlState.inputText ?? DEFAULT_INPUT;
+      this.selectedAlgorithm = urlState.selectedAlgorithm ?? DEFAULT_ALGORITHM;
+      this.mode = urlState.mode ?? DEFAULT_MODE;
     } else if (storageState) {
-      this.inputText = storageState.inputText;
-      this.selectedAlgorithm = storageState.selectedAlgorithm;
-      this.mode = storageState.mode;
+      this.inputText = storageState.inputText ?? DEFAULT_INPUT;
+      this.selectedAlgorithm = storageState.selectedAlgorithm ?? DEFAULT_ALGORITHM;
+      this.mode = storageState.mode ?? DEFAULT_MODE;
     } else {
       this.inputText = DEFAULT_INPUT;
       this.selectedAlgorithm = DEFAULT_ALGORITHM;
