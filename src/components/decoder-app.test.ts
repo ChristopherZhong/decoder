@@ -48,7 +48,7 @@ describe('DecoderApp Integration', () => {
 
   it('should restore state from localStorage on load', async () => {
     localStorage.setItem('devencoder_input', 'stored text');
-    localStorage.setItem('devencoder_algo', 'rot13');
+    localStorage.setItem('devencoder_algorithm', 'rot13');
     localStorage.setItem('devencoder_mode', 'decode');
 
     element = document.createElement('decoder-app') as DecoderApp;
@@ -69,10 +69,10 @@ describe('DecoderApp Integration', () => {
 
   it('should restore state from URL search params on load with higher precedence than localStorage', async () => {
     localStorage.setItem('devencoder_input', 'stored text');
-    localStorage.setItem('devencoder_algo', 'rot13');
+    localStorage.setItem('devencoder_algorithm', 'rot13');
     localStorage.setItem('devencoder_mode', 'decode');
 
-    const newUrl = `${window.location.pathname}?input=url+text&algo=hex&mode=encode`;
+    const newUrl = `${window.location.pathname}?input=url+text&algorithm=hex&mode=encode`;
     window.history.replaceState(null, '', newUrl);
 
     element = document.createElement('decoder-app') as DecoderApp;
@@ -129,12 +129,12 @@ describe('DecoderApp Integration', () => {
     await element.updateComplete;
 
     expect(localStorage.getItem('devencoder_input')).toBe('hello world');
-    expect(localStorage.getItem('devencoder_algo')).toBe('url');
+    expect(localStorage.getItem('devencoder_algorithm')).toBe('url');
     expect(localStorage.getItem('devencoder_mode')).toBe('decode');
 
     const params = new URLSearchParams(window.location.search);
     expect(params.get('input')).toBe('hello world');
-    expect(params.get('algo')).toBe('url');
+    expect(params.get('algorithm')).toBe('url');
     expect(params.get('mode')).toBe('decode');
   });
 
