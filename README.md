@@ -1,6 +1,6 @@
 # ⚡ DevEncoder
 
-[![Deploy to GitHub Pages](https://github.com/coder/decoder/actions/workflows/deploy.yml/badge.svg)](https://github.com/coder/decoder/actions/workflows/deploy.yml)
+[![Deploy to GitHub Pages](https://github.com/ChristopherZhong/decoder/actions/workflows/deploy.yml/badge.svg)](https://github.com/ChristopherZhong/decoder/actions/workflows/deploy.yml)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![Built with Lit](https://img.shields.io/badge/built%20with-Lit-blue?logo=lit&color=324fff)](https://lit.dev/)
 [![Vite](https://img.shields.io/badge/Vite-B736FF?logo=vite&logoColor=FFD62E)](https://vite.dev/)
@@ -16,6 +16,7 @@
 
 DevEncoder is configured to build and publish automatically to GitHub Pages. Every commit pushed to the `main` branch triggers the GitHub Actions CI/CD deployment workflow.
 
+* **Live Demo:** [https://christopherzhong.github.io/decoder/](https://christopherzhong.github.io/decoder/)
 * **GitHub Actions Workflow:** `.github/workflows/deploy.yml`
 * **Target Environment:** GitHub Pages (`dist/` directory artifacts upload)
 
@@ -54,13 +55,20 @@ The workspace is highly modularized, keeping logic and components cleanly decoup
 
 ```bash
 src/
+├── algorithms/                 # Decoding/Encoding algorithms & dynamic registry
+│   ├── types/
+│   │   └── algorithm.interface.ts # Interface definition for algorithms
+│   ├── base-64.algorithm.ts    # Standard Base64 encoder/decoder
+│   ├── hexadecimal.algorithm.ts # Hexadecimal representation encoder/decoder
+│   ├── rot-13.algorithm.ts     # ROT13 shift cipher encoder/decoder
+│   ├── url-percent-encoding.algorithm.ts # URL percent encoding encoder/decoder
+│   ├── is-algorithm.guard.ts   # Type guard for validating algorithms
+│   └── registry.ts             # Central dynamic registry for all algorithms
 ├── components/                 # Lit Web Components
 │   ├── algorithm-selector.ts   # UI controls for selecting algorithm and mode
 │   ├── decoder-app.ts          # Main application container and coordinator
 │   ├── text-panel.ts           # Interactive panel for input/output text areas
 │   └── theme-toggle.ts         # Handles system preference and dark/light switching
-├── utils/                      # Helper modules
-│   └── algorithms.ts           # Pure functions defining encode/decode logic for each algorithm
 ├── index.html                  # Main entry page
 ├── index.ts                    # Entry script bootstrapping the main element
 └── style.css                   # Global styling definitions and CSS variables
@@ -92,7 +100,7 @@ Follow these steps to run, test, and develop DevEncoder locally.
 ### 1. Clone & Install Dependencies
 
 ```bash
-git clone https://github.com/coder/decoder.git
+git clone https://github.com/ChristopherZhong/decoder.git
 cd decoder
 npm install
 ```
