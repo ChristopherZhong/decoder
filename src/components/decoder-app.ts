@@ -5,6 +5,10 @@ import './theme-toggle';
 import './algorithm-selector';
 import './text-panel';
 
+function isMode(value: unknown): value is 'encode' | 'decode' {
+  return value === 'encode' || value === 'decode';
+}
+
 @customElement('decoder-app')
 export class DecoderApp extends LitElement {
   @state() private inputText = '';
@@ -159,10 +163,10 @@ export class DecoderApp extends LitElement {
     }
 
     // Mode
-    if (urlMode === 'encode' || urlMode === 'decode') {
+    if (isMode(urlMode)) {
       this.mode = urlMode;
-    } else if (storageMode === 'encode' || storageMode === 'decode') {
-      this.mode = storageMode as 'encode' | 'decode';
+    } else if (isMode(storageMode)) {
+      this.mode = storageMode;
     } else {
       this.mode = 'encode';
     }
