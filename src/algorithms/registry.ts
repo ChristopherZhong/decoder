@@ -1,12 +1,25 @@
+/// <reference types="vite/client" />
 import { Algorithm } from './types/algorithm.interface';
-import { base64Algorithm } from './base-64.algorithm';
-import { rot13Algorithm } from './rot-13.algorithm';
-import { urlPercentEncodingAlgorithm } from './url-percent-encoding.algorithm';
-import { hexadecimalAlgorithm } from './hexadecimal.algorithm';
 
-export const algorithms: Record<string, Algorithm> = {
-  base64: base64Algorithm,
-  url: urlPercentEncodingAlgorithm,
-  hex: hexadecimalAlgorithm,
-  rot13: rot13Algorithm,
-};
+// Eagerly glob-import all files ending in `.algorithm.ts`
+const modules = import.meta.glob<{ [key: string]: unknown }>('./*.algorithm.ts', { eager: true });
+
+export const algorithms: Record<string, Algorithm> = {};
+
+for (const path in modules) {
+  const module = modules[path];
+  for (const key in module) {
+    const value = module[key];
+    if (
+      value &&
+      typeof value === 'object' &&
+      'id' in value &&
+      'name' in value &&
+      'encode' in value &&
+      'decode' in value
+    ) {
+      const algo = value as Algorithm;
+      algorithms[algo.id] = algo;
+    }
+  }
+}
