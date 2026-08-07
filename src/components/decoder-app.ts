@@ -153,10 +153,10 @@ export class DecoderApp extends LitElement {
       this.inputText = '';
     }
 
-    // Algorithm
-    if (urlAlgorithm !== null) {
+    // Algorithm (validated against registry, falls back to base64 if unknown)
+    if (urlAlgorithm !== null && urlAlgorithm in algorithms) {
       this.selectedAlgorithm = urlAlgorithm;
-    } else if (storageAlgorithm !== null) {
+    } else if (storageAlgorithm !== null && storageAlgorithm in algorithms) {
       this.selectedAlgorithm = storageAlgorithm;
     } else {
       this.selectedAlgorithm = 'base64';

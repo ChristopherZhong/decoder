@@ -171,4 +171,38 @@ describe('DecoderApp Integration', () => {
     const params = new URLSearchParams(window.location.search);
     expect(params.get('input')).toBeNull();
   });
+
+  it('should gracefully fall back to base64 if restored algorithm name is unknown', async () => {
+    const newUrl = `${window.location.pathname}?input=test&algorithm=nonexistent-algo`;
+    window.history.replaceState(null, '', newUrl);
+
+    localStorage.setItem('devencoder_algorithm', 'another-nonexistent-algo');
+
+    element = document.createElement('decoder-app') as DecoderApp;
+    document.body.appendChild(element);
+
+    await element.updateComplete;
+
+    const algoSelector = element.shadowRoot?.querySelector('algorithm-selector') as HTMLElement & {
+      selectedAlgorithm: string;
+    };
+    expect(algoSelector.selectedAlgorithm).toBe('base64');
+  });
+
+  it('should fall back from unknown URL algorithm to a valid localStorage algorithm', async () => {
+    const newUrl = `${window.location.pathname}?input=test&algorithm=nonexistent-algo`;
+    window.history.replaceState(null, '', newUrl);
+
+    localStorage.setItem('devencoder_algorithm', 'rot13');
+
+    element = document.createElement('decoder-app') as DecoderApp;
+    document.body.appendChild(element);
+
+    await element.updateComplete;
+
+    const algoSelector = element.shadowRoot?.querySelector('algorithm-selector') as HTMLElement & {
+      selectedAlgorithm: string;
+    };
+    expect(algoSelector.selectedAlgorithm).toBe('rot13');
+  });
 });
