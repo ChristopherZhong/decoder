@@ -1,5 +1,6 @@
 /// <reference types="vite/client" />
-import { Algorithm, isAlgorithm } from './types/algorithm.interface';
+import { Algorithm } from './types/algorithm.interface';
+import { isAlgorithm } from './types/is-algorithm.guard';
 
 // Eagerly glob-import all files ending in `.algorithm.ts`
 const modules = import.meta.glob<{ [key: string]: unknown }>('./*.algorithm.ts', { eager: true });
