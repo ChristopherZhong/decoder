@@ -1,4 +1,4 @@
-import { Algorithm } from './algorithm.interface';
+import { Algorithm } from './types/algorithm.interface';
 
 export function isAlgorithm(value: unknown): value is Algorithm {
   return (
