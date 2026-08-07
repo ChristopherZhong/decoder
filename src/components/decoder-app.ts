@@ -28,18 +28,23 @@ function getState(getVal: (key: string) => string | null): AppState | null {
   const algorithm = getVal('algorithm');
   const mode = getVal('mode');
 
-  const hasInput = input !== null;
-  const hasAlgorithm = isAlgorithmKey(algorithm);
-  const hasMode = isMode(mode);
+  // If a parameter is present but invalid, the entire state is invalid -> return null
+  if (algorithm !== null && !isAlgorithmKey(algorithm)) {
+    return null;
+  }
+  if (mode !== null && !isMode(mode)) {
+    return null;
+  }
 
-  if (!hasInput && !hasAlgorithm && !hasMode) {
+  // If absolutely no parameters are present, return null
+  if (input === null && algorithm === null && mode === null) {
     return null;
   }
 
   return {
     inputText: input ?? DEFAULT_INPUT,
-    selectedAlgorithm: isAlgorithmKey(algorithm) ? algorithm : DEFAULT_ALGORITHM,
-    mode: isMode(mode) ? mode : DEFAULT_MODE,
+    selectedAlgorithm: algorithm ?? DEFAULT_ALGORITHM,
+    mode: mode ?? DEFAULT_MODE,
   };
 }
 

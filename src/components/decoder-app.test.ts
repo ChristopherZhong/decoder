@@ -217,7 +217,7 @@ describe('DecoderApp Integration', () => {
     expect(algoSelector.mode).toBe('encode');
   });
 
-  it('should ignore and fall back to defaults if URL has some invalid params, without touching localStorage', async () => {
+  it('should fall back to localStorage if URL contains some invalid parameters', async () => {
     localStorage.setItem('devencoder_input', 'stored text');
     localStorage.setItem('devencoder_algorithm', 'rot13');
     localStorage.setItem('devencoder_mode', 'decode');
@@ -232,12 +232,13 @@ describe('DecoderApp Integration', () => {
     await element.updateComplete;
 
     const inputPanel = element.shadowRoot?.querySelector('text-panel[title="Input"]') as TextPanel;
-    expect(inputPanel.value).toBe('url text');
+    expect(inputPanel.value).toBe('stored text');
 
-    // algorithm should be default 'base64' (not 'rot13') because of the URL presence
     const algoSelector = element.shadowRoot?.querySelector('algorithm-selector') as HTMLElement & {
       selectedAlgorithm: string;
+      mode: string;
     };
-    expect(algoSelector.selectedAlgorithm).toBe('base64');
+    expect(algoSelector.selectedAlgorithm).toBe('rot13');
+    expect(algoSelector.mode).toBe('decode');
   });
 });
