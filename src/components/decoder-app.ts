@@ -17,6 +17,44 @@ const DEFAULT_INPUT = '';
 const DEFAULT_ALGORITHM = 'base64';
 const DEFAULT_MODE = 'encode';
 
+interface AppState {
+  inputText: string;
+  selectedAlgorithm: string;
+  mode: 'encode' | 'decode';
+}
+
+function parseUrlState(params: URLSearchParams): AppState | null {
+  const input = params.get('input');
+  const algorithm = params.get('algorithm');
+  const mode = params.get('mode');
+
+  if (input === null && algorithm === null && mode === null) {
+    return null;
+  }
+
+  return {
+    inputText: input ?? DEFAULT_INPUT,
+    selectedAlgorithm: isAlgorithmKey(algorithm) ? algorithm : DEFAULT_ALGORITHM,
+    mode: isMode(mode) ? mode : DEFAULT_MODE,
+  };
+}
+
+function parseStorageState(): AppState | null {
+  const input = localStorage.getItem('devencoder_input');
+  const algorithm = localStorage.getItem('devencoder_algorithm');
+  const mode = localStorage.getItem('devencoder_mode');
+
+  if (input === null && algorithm === null && mode === null) {
+    return null;
+  }
+
+  return {
+    inputText: input ?? DEFAULT_INPUT,
+    selectedAlgorithm: isAlgorithmKey(algorithm) ? algorithm : DEFAULT_ALGORITHM,
+    mode: isMode(mode) ? mode : DEFAULT_MODE,
+  };
+}
+
 @customElement('decoder-app')
 export class DecoderApp extends LitElement {
   @state() private inputText = DEFAULT_INPUT;
@@ -144,28 +182,17 @@ export class DecoderApp extends LitElement {
 
   private loadState() {
     const params = new URLSearchParams(window.location.search);
-    const urlInput = params.get('input');
-    const urlAlgorithm = params.get('algorithm');
-    const urlMode = params.get('mode');
+    const urlState = parseUrlState(params);
+    const storageState = parseStorageState();
 
-    const storageInput = localStorage.getItem('devencoder_input');
-    const storageAlgorithm = localStorage.getItem('devencoder_algorithm');
-    const storageMode = localStorage.getItem('devencoder_mode');
-
-    const hasUrlParams = urlInput !== null || urlAlgorithm !== null || urlMode !== null;
-    const hasStorageParams =
-      storageInput !== null || storageAlgorithm !== null || storageMode !== null;
-
-    if (hasUrlParams) {
-      this.inputText = urlInput ?? DEFAULT_INPUT;
-      this.selectedAlgorithm = isAlgorithmKey(urlAlgorithm) ? urlAlgorithm : DEFAULT_ALGORITHM;
-      this.mode = isMode(urlMode) ? urlMode : DEFAULT_MODE;
-    } else if (hasStorageParams) {
-      this.inputText = storageInput ?? DEFAULT_INPUT;
-      this.selectedAlgorithm = isAlgorithmKey(storageAlgorithm)
-        ? storageAlgorithm
-        : DEFAULT_ALGORITHM;
-      this.mode = isMode(storageMode) ? storageMode : DEFAULT_MODE;
+    if (urlState) {
+      this.inputText = urlState.inputText;
+      this.selectedAlgorithm = urlState.selectedAlgorithm;
+      this.mode = urlState.mode;
+    } else if (storageState) {
+      this.inputText = storageState.inputText;
+      this.selectedAlgorithm = storageState.selectedAlgorithm;
+      this.mode = storageState.mode;
     } else {
       this.inputText = DEFAULT_INPUT;
       this.selectedAlgorithm = DEFAULT_ALGORITHM;
