@@ -9,6 +9,10 @@ function isMode(value: unknown): value is 'encode' | 'decode' {
   return value === 'encode' || value === 'decode';
 }
 
+function isAlgorithmKey(value: unknown): value is keyof typeof algorithms {
+  return typeof value === 'string' && value in algorithms;
+}
+
 @customElement('decoder-app')
 export class DecoderApp extends LitElement {
   @state() private inputText = '';
@@ -154,9 +158,9 @@ export class DecoderApp extends LitElement {
     }
 
     // Algorithm (validated against registry, falls back to base64 if unknown)
-    if (urlAlgorithm !== null && urlAlgorithm in algorithms) {
+    if (isAlgorithmKey(urlAlgorithm)) {
       this.selectedAlgorithm = urlAlgorithm;
-    } else if (storageAlgorithm !== null && storageAlgorithm in algorithms) {
+    } else if (isAlgorithmKey(storageAlgorithm)) {
       this.selectedAlgorithm = storageAlgorithm;
     } else {
       this.selectedAlgorithm = 'base64';
