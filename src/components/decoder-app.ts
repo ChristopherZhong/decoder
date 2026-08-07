@@ -133,11 +133,11 @@ export class DecoderApp extends LitElement {
   private loadState() {
     const params = new URLSearchParams(window.location.search);
     const urlInput = params.get('input');
-    const urlAlgo = params.get('algorithm');
+    const urlAlgorithm = params.get('algorithm');
     const urlMode = params.get('mode');
 
     const storageInput = localStorage.getItem('devencoder_input');
-    const storageAlgo = localStorage.getItem('devencoder_algorithm');
+    const storageAlgorithm = localStorage.getItem('devencoder_algorithm');
     const storageMode = localStorage.getItem('devencoder_mode');
 
     // Input text
@@ -150,10 +150,10 @@ export class DecoderApp extends LitElement {
     }
 
     // Algorithm
-    if (urlAlgo !== null) {
-      this.selectedAlgorithm = urlAlgo;
-    } else if (storageAlgo !== null) {
-      this.selectedAlgorithm = storageAlgo;
+    if (urlAlgorithm !== null) {
+      this.selectedAlgorithm = urlAlgorithm;
+    } else if (storageAlgorithm !== null) {
+      this.selectedAlgorithm = storageAlgorithm;
     } else {
       this.selectedAlgorithm = 'base64';
     }
