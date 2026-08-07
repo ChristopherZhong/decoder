@@ -1,7 +1,7 @@
 # ⚡ DevEncoder
 
 [![Deploy to GitHub Pages](https://github.com/coder/decoder/actions/workflows/deploy.yml/badge.svg)](https://github.com/coder/decoder/actions/workflows/deploy.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![Built with Lit](https://img.shields.io/badge/built%20with-Lit-blue?logo=lit&color=324fff)](https://lit.dev/)
 [![Vite](https://img.shields.io/badge/Vite-B736FF?logo=vite&logoColor=FFD62E)](https://vite.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -136,4 +136,4 @@ npm run lint
 
 ## 📄 License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the [Apache License 2.0](LICENSE).
