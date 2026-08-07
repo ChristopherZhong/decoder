@@ -17,3 +17,18 @@ Before finalizing any work, inspect the active repository environment and ensure
 ## 3. Review and Verify Before Submitting
 - Always verify your documentation updates using read-only tools to confirm clarity, formatting, and correct syntax.
 - Ensure that updating documentation does not introduce broken markdown links, stale descriptions, or typos.
+
+## 4. State Management, Atomicity, and Refactoring Principles
+To prevent over-engineering, code duplication, and logical "rabbit-holes," all agents must strictly adhere to the following principles when implementing state management, loading mechanisms, or refactoring:
+
+### 1. State Atomicity over Partial Merges
+- **The Principle:** Treat application state (e.g. `inputText`, `selectedAlgorithm`, `mode`) as a single, cohesive, atomic snapshot (e.g. an `AppState` interface with strictly non-optional fields).
+- **The Rule:** Either a state source (such as URL parameter search string or `localStorage`) contains a fully-complete, fully-validated tuple of values, or we reject the entire source (`return null`) and fall back to the next complete source (or defaults).
+- **The Goal:** Completely prevents "hybrid states" where some fields load from the URL, some load from `localStorage`, and some fallback to defaults. It eliminates complex coalescing (`??`) and conditional parsing loops.
+
+### 2. Avoid "Local Optimization" Complexity Traps
+- When feedback or bug reports identify a logical edge case (e.g. "hybrid/invalid states on reload"), **do not immediately patch the symptom by layering more conditional checks, optional interfaces, or helper functions.**
+- **Instead:** Take a step back and examine the core data flow. Ask yourself: *"Is there a way to simplify the data contract itself so that this edge-case becomes impossible by design?"* Enforcing atomic parameters usually eliminates the need for complex, nested validation logic.
+
+### 3. Maintain High DRYness without Convoluted Abstractions
+- Keep helper utilities and loaders simple. If both URL parsing and storage parsing have similar structures, parameterize them with clean, straightforward functional inputs (like parameter-key lookups) rather than creating distinct, verbose duplicate helper functions.
