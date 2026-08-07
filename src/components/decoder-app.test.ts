@@ -189,14 +189,14 @@ describe('DecoderApp Integration', () => {
     expect(algoSelector.selectedAlgorithm).toBe('base64');
   });
 
-  it('should completely ignore localStorage values and fall back to default values when any URL parameter is present', async () => {
+  it('should completely ignore localStorage values and use URL state when all URL parameters are present and valid', async () => {
     // localStorage has valid values
     localStorage.setItem('devencoder_input', 'stored text');
     localStorage.setItem('devencoder_algorithm', 'rot13');
     localStorage.setItem('devencoder_mode', 'decode');
 
-    // URL contains only mode parameter (with input and algorithm missing)
-    const newUrl = `${window.location.pathname}?mode=encode`;
+    // URL contains fully valid parameters
+    const newUrl = `${window.location.pathname}?input=url+text&algorithm=hex&mode=encode`;
     window.history.replaceState(null, '', newUrl);
 
     element = document.createElement('decoder-app') as DecoderApp;
@@ -204,16 +204,16 @@ describe('DecoderApp Integration', () => {
 
     await element.updateComplete;
 
-    // input must be default (""), not stored text
+    // input must be from URL
     const inputPanel = element.shadowRoot?.querySelector('text-panel[title="Input"]') as TextPanel;
-    expect(inputPanel.value).toBe('');
+    expect(inputPanel.value).toBe('url text');
 
-    // algorithm must be default ("base64"), not rot13
+    // algorithm and mode must be from URL
     const algoSelector = element.shadowRoot?.querySelector('algorithm-selector') as HTMLElement & {
       selectedAlgorithm: string;
       mode: string;
     };
-    expect(algoSelector.selectedAlgorithm).toBe('base64');
+    expect(algoSelector.selectedAlgorithm).toBe('hex');
     expect(algoSelector.mode).toBe('encode');
   });
 

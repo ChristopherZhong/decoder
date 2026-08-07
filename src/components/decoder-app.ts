@@ -18,33 +18,24 @@ const DEFAULT_ALGORITHM = 'base64';
 const DEFAULT_MODE = 'encode';
 
 interface AppState {
-  inputText: string;
-  selectedAlgorithm: string;
+  input: string;
+  algorithm: string;
   mode: 'encode' | 'decode';
 }
 
-function getState(getVal: (key: string) => string | null): AppState | null {
-  const input = getVal('input');
-  const algorithm = getVal('algorithm');
-  const mode = getVal('mode');
+function getState(getValue: (key: string) => string | null): AppState | null {
+  const algorithm = getValue('algorithm');
+  const input = getValue('input');
+  const mode = getValue('mode');
 
-  // If a parameter is present but invalid, the entire state is invalid -> return null
-  if (algorithm !== null && !isAlgorithmKey(algorithm)) {
-    return null;
-  }
-  if (mode !== null && !isMode(mode)) {
-    return null;
-  }
-
-  // If absolutely no parameters are present, return null
-  if (input === null && algorithm === null && mode === null) {
+  if (!isAlgorithmKey(algorithm) || input == null || !isMode(mode)) {
     return null;
   }
 
   return {
-    inputText: input ?? DEFAULT_INPUT,
-    selectedAlgorithm: algorithm ?? DEFAULT_ALGORITHM,
-    mode: mode ?? DEFAULT_MODE,
+    algorithm,
+    input,
+    mode,
   };
 }
 
@@ -179,12 +170,12 @@ export class DecoderApp extends LitElement {
     const storageState = getState((key) => localStorage.getItem(`devencoder_${key}`));
 
     if (urlState) {
-      this.inputText = urlState.inputText;
-      this.selectedAlgorithm = urlState.selectedAlgorithm;
+      this.inputText = urlState.input;
+      this.selectedAlgorithm = urlState.algorithm;
       this.mode = urlState.mode;
     } else if (storageState) {
-      this.inputText = storageState.inputText;
-      this.selectedAlgorithm = storageState.selectedAlgorithm;
+      this.inputText = storageState.input;
+      this.selectedAlgorithm = storageState.algorithm;
       this.mode = storageState.mode;
     } else {
       this.inputText = DEFAULT_INPUT;
