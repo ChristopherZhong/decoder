@@ -144,35 +144,22 @@ export class DecoderApp extends LitElement {
     const urlAlgorithm = params.get('algorithm');
     const urlMode = params.get('mode');
 
-    const storageInput = localStorage.getItem('devencoder_input');
-    const storageAlgorithm = localStorage.getItem('devencoder_algorithm');
-    const storageMode = localStorage.getItem('devencoder_mode');
+    const hasUrlParams = urlInput !== null || urlAlgorithm !== null || urlMode !== null;
 
-    // Input text
-    if (urlInput !== null) {
-      this.inputText = urlInput;
-    } else if (storageInput !== null) {
-      this.inputText = storageInput;
+    if (hasUrlParams) {
+      // Load entirely from URL state
+      this.inputText = urlInput !== null ? urlInput : '';
+      this.selectedAlgorithm = isAlgorithmKey(urlAlgorithm) ? urlAlgorithm : 'base64';
+      this.mode = isMode(urlMode) ? urlMode : 'encode';
     } else {
-      this.inputText = '';
-    }
+      // Load entirely from localStorage
+      const storageInput = localStorage.getItem('devencoder_input');
+      const storageAlgorithm = localStorage.getItem('devencoder_algorithm');
+      const storageMode = localStorage.getItem('devencoder_mode');
 
-    // Algorithm (validated against registry, falls back to base64 if unknown)
-    if (isAlgorithmKey(urlAlgorithm)) {
-      this.selectedAlgorithm = urlAlgorithm;
-    } else if (isAlgorithmKey(storageAlgorithm)) {
-      this.selectedAlgorithm = storageAlgorithm;
-    } else {
-      this.selectedAlgorithm = 'base64';
-    }
-
-    // Mode
-    if (isMode(urlMode)) {
-      this.mode = urlMode;
-    } else if (isMode(storageMode)) {
-      this.mode = storageMode;
-    } else {
-      this.mode = 'encode';
+      this.inputText = storageInput !== null ? storageInput : '';
+      this.selectedAlgorithm = isAlgorithmKey(storageAlgorithm) ? storageAlgorithm : 'base64';
+      this.mode = isMode(storageMode) ? storageMode : 'encode';
     }
 
     this.performConversion();

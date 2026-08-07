@@ -189,20 +189,55 @@ describe('DecoderApp Integration', () => {
     expect(algoSelector.selectedAlgorithm).toBe('base64');
   });
 
-  it('should fall back from unknown URL algorithm to a valid localStorage algorithm', async () => {
-    const newUrl = `${window.location.pathname}?input=test&algorithm=nonexistent-algo`;
-    window.history.replaceState(null, '', newUrl);
-
+  it('should completely ignore localStorage values and fall back to default values when any URL parameter is present', async () => {
+    // localStorage has valid values
+    localStorage.setItem('devencoder_input', 'stored text');
     localStorage.setItem('devencoder_algorithm', 'rot13');
+    localStorage.setItem('devencoder_mode', 'decode');
+
+    // URL contains only mode parameter (with input and algorithm missing)
+    const newUrl = `${window.location.pathname}?mode=encode`;
+    window.history.replaceState(null, '', newUrl);
 
     element = document.createElement('decoder-app') as DecoderApp;
     document.body.appendChild(element);
 
     await element.updateComplete;
 
+    // input must be default (""), not stored text
+    const inputPanel = element.shadowRoot?.querySelector('text-panel[title="Input"]') as TextPanel;
+    expect(inputPanel.value).toBe('');
+
+    // algorithm must be default ("base64"), not rot13
+    const algoSelector = element.shadowRoot?.querySelector('algorithm-selector') as HTMLElement & {
+      selectedAlgorithm: string;
+      mode: string;
+    };
+    expect(algoSelector.selectedAlgorithm).toBe('base64');
+    expect(algoSelector.mode).toBe('encode');
+  });
+
+  it('should ignore and fall back to defaults if URL has some invalid params, without touching localStorage', async () => {
+    localStorage.setItem('devencoder_input', 'stored text');
+    localStorage.setItem('devencoder_algorithm', 'rot13');
+    localStorage.setItem('devencoder_mode', 'decode');
+
+    // URL has valid input, but invalid algorithm
+    const newUrl = `${window.location.pathname}?input=url+text&algorithm=invalid_algo`;
+    window.history.replaceState(null, '', newUrl);
+
+    element = document.createElement('decoder-app') as DecoderApp;
+    document.body.appendChild(element);
+
+    await element.updateComplete;
+
+    const inputPanel = element.shadowRoot?.querySelector('text-panel[title="Input"]') as TextPanel;
+    expect(inputPanel.value).toBe('url text');
+
+    // algorithm should be default 'base64' (not 'rot13') because of the URL presence
     const algoSelector = element.shadowRoot?.querySelector('algorithm-selector') as HTMLElement & {
       selectedAlgorithm: string;
     };
-    expect(algoSelector.selectedAlgorithm).toBe('rot13');
+    expect(algoSelector.selectedAlgorithm).toBe('base64');
   });
 });
