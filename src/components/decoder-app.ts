@@ -125,19 +125,94 @@ export class DecoderApp extends LitElement {
     }
   `;
 
+  connectedCallback() {
+    super.connectedCallback();
+    this.loadState();
+  }
+
+  private loadState() {
+    const params = new URLSearchParams(window.location.search);
+    const urlInput = params.get('input');
+    const urlAlgo = params.get('algo');
+    const urlMode = params.get('mode');
+
+    const storageInput = localStorage.getItem('devencoder_input');
+    const storageAlgo = localStorage.getItem('devencoder_algo');
+    const storageMode = localStorage.getItem('devencoder_mode');
+
+    // Input text
+    if (urlInput !== null) {
+      this.inputText = urlInput;
+    } else if (storageInput !== null) {
+      this.inputText = storageInput;
+    } else {
+      this.inputText = '';
+    }
+
+    // Algorithm
+    if (urlAlgo !== null) {
+      this.selectedAlgorithm = urlAlgo;
+    } else if (storageAlgo !== null) {
+      this.selectedAlgorithm = storageAlgo;
+    } else {
+      this.selectedAlgorithm = 'base64';
+    }
+
+    // Mode
+    if (urlMode === 'encode' || urlMode === 'decode') {
+      this.mode = urlMode;
+    } else if (storageMode === 'encode' || storageMode === 'decode') {
+      this.mode = storageMode as 'encode' | 'decode';
+    } else {
+      this.mode = 'encode';
+    }
+
+    this.performConversion();
+  }
+
+  private saveState() {
+    // Save to localStorage
+    if (this.inputText) {
+      localStorage.setItem('devencoder_input', this.inputText);
+    } else {
+      localStorage.removeItem('devencoder_input');
+    }
+
+    localStorage.setItem('devencoder_algo', this.selectedAlgorithm);
+    localStorage.setItem('devencoder_mode', this.mode);
+
+    // Save to URL search params
+    const params = new URLSearchParams(window.location.search);
+    if (this.inputText) {
+      params.set('input', this.inputText);
+    } else {
+      params.delete('input');
+    }
+
+    params.set('algo', this.selectedAlgorithm);
+    params.set('mode', this.mode);
+
+    const newSearch = params.toString();
+    const newUrl = `${window.location.pathname}${newSearch ? '?' + newSearch : ''}${window.location.hash}`;
+    window.history.replaceState(null, '', newUrl);
+  }
+
   private handleTextInput(e: CustomEvent) {
     this.inputText = e.detail.value;
     this.performConversion();
+    this.saveState();
   }
 
   private handleAlgoChanged(e: CustomEvent) {
     this.selectedAlgorithm = e.detail.algorithm;
     this.performConversion();
+    this.saveState();
   }
 
   private handleModeChanged(e: CustomEvent) {
     this.mode = e.detail.mode;
     this.performConversion();
+    this.saveState();
   }
 
   private handleSwapRequested() {
@@ -146,6 +221,7 @@ export class DecoderApp extends LitElement {
     this.inputText = previousOutput;
     this.mode = this.mode === 'encode' ? 'decode' : 'encode';
     this.performConversion();
+    this.saveState();
   }
 
   private performConversion() {
